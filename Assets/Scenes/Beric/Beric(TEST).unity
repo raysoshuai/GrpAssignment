@@ -284,6 +284,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: XR Rig (Modified)
       objectReference: {fileID: 0}
+    - target: {fileID: 4846478953610863175, guid: 67b180ebbb4ad43938fd5c50ffa21f5b, type: 3}
+      propertyPath: m_InteractionLayers.m_Bits
+      value: 4294967295
+      objectReference: {fileID: 0}
     - target: {fileID: 8747815291906445024, guid: 67b180ebbb4ad43938fd5c50ffa21f5b, type: 3}
       propertyPath: m_LocalPosition.x
       value: 0
@@ -726,8 +730,8 @@ PrefabInstance:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 369805860}
   - {fileID: 1108820621}
+  - {fileID: 369805860}
   - {fileID: 1613260672}
   - {fileID: 1703222187}
   - {fileID: 8651755621928659282}
