@@ -65,22 +65,26 @@ public class VinylPlaybackHandler : MonoBehaviour
             deltaAngle -= 360f;
         }
 
-        totalAngle += deltaAngle;
-        float totalRotations = totalAngle / 360f;
-        float rotationPercentage = totalRotations % 1f; // Get the fractional part of the rotations
-        float newPlaytime = rotationPercentage * audioSource.clip.length;
+        // Only process if the rotation is clockwise
+        if (deltaAngle > 0f)
+        {
+            totalAngle += deltaAngle;
+            float totalRotations = totalAngle / 360f;
+            float rotationPercentage = totalRotations % 1f; // Get the fractional part of the rotations
+            float newPlaytime = rotationPercentage * audioSource.clip.length;
 
-        targetPlaytime += newPlaytime;
+            targetPlaytime += newPlaytime;
 
-        // Ensure audio continues from the accumulated playtime
-        audioSource.time = accumulatedPlaytime % audioSource.clip.length;
-        accumulatedPlaytime = audioSource.time + newPlaytime;
-        isPlaying = true;
-        audioSource.Play();
+            // Ensure audio continues from the accumulated playtime
+            audioSource.time = accumulatedPlaytime % audioSource.clip.length;
+            accumulatedPlaytime = audioSource.time + newPlaytime;
+            isPlaying = true;
+            audioSource.Play();
 
-        Debug.Log("Handle released, delta angle: " + deltaAngle);
-        Debug.Log("Accumulated playtime: " + accumulatedPlaytime);
-        Debug.Log("Target playtime: " + targetPlaytime);
+            Debug.Log("Handle released, delta angle: " + deltaAngle);
+            Debug.Log("Accumulated playtime: " + accumulatedPlaytime);
+            Debug.Log("Target playtime: " + targetPlaytime);
+        }
 
         lastAngle = currentAngle;  // Update lastAngle to the current angle
     }
