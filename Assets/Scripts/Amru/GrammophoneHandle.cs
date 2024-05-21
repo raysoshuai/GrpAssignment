@@ -89,8 +89,7 @@ public class LockRotation : MonoBehaviour
 
     float CalculateAngularDrag()
     {
-        // Adjust the angular drag based on the scale of the object
-        float scaleMagnitude = transform.localScale.magnitude;
-        return Mathf.Clamp(1f / scaleMagnitude, 0.1f, 10f); 
+        // No angular drag
+        return 0f;
     }
 }
