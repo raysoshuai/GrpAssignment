@@ -6,6 +6,8 @@ public class VinylPlaybackHandler : MonoBehaviour
     public AudioSource audioSource;
     public AudioClip[] vinylTracks;  // Assign different tracks to different vinyl records in the Inspector
     public GameObject vinyl;         // Assign the vinyl GameObject in the Inspector
+    public Transform vinylMesh;      // Assign the actual vinyl mesh (child of the vinyl) in the Inspector
+    public Transform stickerMesh;    // Assign the sticker mesh (child of the vinyl) in the Inspector
     public XRGrabInteractable handleGrabInteractable;  // Assign the handle GameObject with XRGrabInteractable in the Inspector
 
     private HingeJoint hingeJoint;
@@ -87,22 +89,7 @@ public class VinylPlaybackHandler : MonoBehaviour
     {
         if (isPlaying)
         {
-            float rotationSpeed = (360f / audioSource.clip.length) * Time.deltaTime;
-
-            // Rotate the parent object on the y-axis
-            vinyl.transform.Rotate(0f, rotationSpeed, 0f);
-
-            foreach (Transform child in vinyl.transform)
-            {
-                if (child.gameObject.layer != LayerMask.NameToLayer("Ignore Raycast")) // Ignore non-rendered objects
-                {
-                    // Calculate the new y rotation
-                    float newYRotation = rotationSpeed;
-
-                    // Apply the rotation around the parent's axis to the child
-                    child.Rotate(0f, newYRotation, 0f, Space.Self);
-                }
-            }
+            RotateVinylAndStickerMeshes();
 
             if (audioSource.time >= targetPlaytime % audioSource.clip.length)
             {
@@ -113,10 +100,13 @@ public class VinylPlaybackHandler : MonoBehaviour
         }
     }
 
-
-
-
-
+    private void RotateVinylAndStickerMeshes()
+    {
+        float rotationSpeed = (360f / audioSource.clip.length) * Time.deltaTime;
+        vinylMesh.Rotate(0f, rotationSpeed, 0f);
+        stickerMesh.Rotate(0f, rotationSpeed, 0f);
+        Debug.Log("Rotating vinyl and sticker meshes at speed: " + rotationSpeed);
+    }
 
     public void SetVinylTrack(int trackIndex)
     {
