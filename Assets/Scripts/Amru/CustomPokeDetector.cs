@@ -15,10 +15,10 @@ public class CustomPokeDetector : MonoBehaviour
     // When the button is pressed
     public UnityEvent OnPress = new UnityEvent();
     public UnityEvent OnHoverAndPress = new UnityEvent();
-    public UnityEvent OnHoverExitOrReleaseOrOnHoverAndRelease = new UnityEvent(); // Consolidated event
 
     private bool isHovering = false;
     private bool isTriggerPressed = false;
+    private bool wasHoverAndPressInvoked = false;
 
     private void Awake()
     {
@@ -87,42 +87,6 @@ public class CustomPokeDetector : MonoBehaviour
         }
     }
 
-    private void OnTriggerPressed(InputAction.CallbackContext context)
-    {
-        Debug.Log("OnTriggerPressed: Button pressed.");
-        float triggerValue = context.action.ReadValue<float>();
-        if (triggerValue > 0.0f)
-        {
-            isTriggerPressed = true;
-            OnPress.Invoke();
-            Debug.Log("Trigger Pressed");
-
-            if (isHovering)
-            {
-                OnHoverAndPress.Invoke();
-                Debug.Log("Trigger Pressed and Hovering");
-            }
-        }
-    }
-
-    private void OnTriggerReleased(InputAction.CallbackContext context)
-    {
-        Debug.Log("OnTriggerReleased: Button released.");
-        isTriggerPressed = false;
-
-        // Invoke consolidated event on release
-        if (isHovering)
-        {
-            OnHoverExitOrReleaseOrOnHoverAndRelease.Invoke();
-            Debug.Log("Trigger Released and Hovering");
-        }
-        else
-        {
-            OnHoverExitOrReleaseOrOnHoverAndRelease.Invoke();
-            Debug.Log("Trigger Released and Not Hovering");
-        }
-    }
-
     private void Start()
     {
         Debug.Log("Start: Setting up interactable.");
@@ -137,38 +101,49 @@ public class CustomPokeDetector : MonoBehaviour
         }
     }
 
+    private void Update()
+    {
+        // This method can be removed since we handle trigger detection in the callbacks
+    }
+
+    private void OnTriggerPressed(InputAction.CallbackContext context)
+    {
+        Debug.Log("OnTriggerPressed: Button pressed.");
+        isTriggerPressed = true;
+        wasHoverAndPressInvoked = false; // Reset the flag on new trigger press
+        OnPress.Invoke();
+
+        CheckHoverAndPress();
+    }
+
+    private void OnTriggerReleased(InputAction.CallbackContext context)
+    {
+        Debug.Log("OnTriggerReleased: Button released.");
+        isTriggerPressed = false;
+        wasHoverAndPressInvoked = false;
+    }
+
     public void OnHoverEnter(HoverEnterEventArgs args)
     {
         isHovering = true;
-        Debug.Log("Hover Entered");
-
-        if (isTriggerPressed)
-        {
-            OnHoverAndPress.Invoke();
-            Debug.Log("Trigger Pressed and Hover Entered");
-        }
+        Debug.Log("Hover Entered: isHovering set to true");
+        CheckHoverAndPress();
     }
 
     public void OnHoverExit(HoverExitEventArgs args)
     {
         isHovering = false;
-        Debug.Log("Hover Exited");
-
-        // Invoke consolidated event on hover exit
-        OnHoverExitOrReleaseOrOnHoverAndRelease.Invoke();
-        Debug.Log("Hover Exited");
+        wasHoverAndPressInvoked = false; // Reset the flag on hover exit
+        Debug.Log("Hover Exited: isHovering set to false");
     }
 
-    private void Update()
+    private void CheckHoverAndPress()
     {
-        if (leftTriggerAction != null && leftTriggerAction.triggered)
+        if (isHovering && isTriggerPressed && !wasHoverAndPressInvoked)
         {
-            Debug.Log("Left trigger action detected in Update.");
-        }
-
-        if (rightTriggerAction != null && rightTriggerAction.triggered)
-        {
-            Debug.Log("Right trigger action detected in Update.");
+            OnHoverAndPress.Invoke();
+            wasHoverAndPressInvoked = true;
+            Debug.Log("CheckHoverAndPress: OnHoverAndPress Invoked");
         }
     }
 }
