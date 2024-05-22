@@ -15,15 +15,18 @@ public class CustomPokeDetector : MonoBehaviour
     // When the button is pressed
     public UnityEvent OnPress = new UnityEvent();
     public UnityEvent OnHoverAndPress = new UnityEvent();
+    public UnityEvent OnHoverExitOrReleaseOrOnHoverAndRelease = new UnityEvent(); // Consolidated event
 
     private bool isHovering = false;
+    private bool isTriggerPressed = false;
 
     private void Awake()
     {
         Debug.Log("Awake: Initializing actions.");
         if (leftTriggerAction != null)
         {
-            leftTriggerAction.started += Pressed;
+            leftTriggerAction.started += OnTriggerPressed;
+            leftTriggerAction.canceled += OnTriggerReleased;
         }
         else
         {
@@ -32,7 +35,8 @@ public class CustomPokeDetector : MonoBehaviour
 
         if (rightTriggerAction != null)
         {
-            rightTriggerAction.started += Pressed;
+            rightTriggerAction.started += OnTriggerPressed;
+            rightTriggerAction.canceled += OnTriggerReleased;
         }
         else
         {
@@ -44,12 +48,14 @@ public class CustomPokeDetector : MonoBehaviour
     {
         if (leftTriggerAction != null)
         {
-            leftTriggerAction.started -= Pressed;
+            leftTriggerAction.started -= OnTriggerPressed;
+            leftTriggerAction.canceled -= OnTriggerReleased;
         }
 
         if (rightTriggerAction != null)
         {
-            rightTriggerAction.started -= Pressed;
+            rightTriggerAction.started -= OnTriggerPressed;
+            rightTriggerAction.canceled -= OnTriggerReleased;
         }
     }
 
@@ -81,12 +87,13 @@ public class CustomPokeDetector : MonoBehaviour
         }
     }
 
-    private void Pressed(InputAction.CallbackContext context)
+    private void OnTriggerPressed(InputAction.CallbackContext context)
     {
-        Debug.Log("Pressed: Button pressed.");
+        Debug.Log("OnTriggerPressed: Button pressed.");
         float triggerValue = context.action.ReadValue<float>();
         if (triggerValue > 0.0f)
         {
+            isTriggerPressed = true;
             OnPress.Invoke();
             Debug.Log("Trigger Pressed");
 
@@ -95,6 +102,24 @@ public class CustomPokeDetector : MonoBehaviour
                 OnHoverAndPress.Invoke();
                 Debug.Log("Trigger Pressed and Hovering");
             }
+        }
+    }
+
+    private void OnTriggerReleased(InputAction.CallbackContext context)
+    {
+        Debug.Log("OnTriggerReleased: Button released.");
+        isTriggerPressed = false;
+
+        // Invoke consolidated event on release
+        if (isHovering)
+        {
+            OnHoverExitOrReleaseOrOnHoverAndRelease.Invoke();
+            Debug.Log("Trigger Released and Hovering");
+        }
+        else
+        {
+            OnHoverExitOrReleaseOrOnHoverAndRelease.Invoke();
+            Debug.Log("Trigger Released and Not Hovering");
         }
     }
 
@@ -116,11 +141,21 @@ public class CustomPokeDetector : MonoBehaviour
     {
         isHovering = true;
         Debug.Log("Hover Entered");
+
+        if (isTriggerPressed)
+        {
+            OnHoverAndPress.Invoke();
+            Debug.Log("Trigger Pressed and Hover Entered");
+        }
     }
 
     public void OnHoverExit(HoverExitEventArgs args)
     {
         isHovering = false;
+        Debug.Log("Hover Exited");
+
+        // Invoke consolidated event on hover exit
+        OnHoverExitOrReleaseOrOnHoverAndRelease.Invoke();
         Debug.Log("Hover Exited");
     }
 

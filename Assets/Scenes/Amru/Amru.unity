@@ -282,7 +282,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6598815579406187037, guid: 18ddb545287c546e19cc77dc9fbb2189, type: 3}
       propertyPath: m_IsActive
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -1041,6 +1041,21 @@ MonoBehaviour:
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 2100000, guid: 17dcb61e250d9ab4fb89d92b3abab5a2, type: 2}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Material, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
+  OnHoverExitOrReleaseOrOnHoverAndRelease:
+    m_PersistentCalls:
+      m_Calls:
+      - m_Target: {fileID: 831840218}
+        m_TargetAssemblyTypeName: UnityEngine.Renderer, UnityEngine
+        m_MethodName: set_material
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 2100000, guid: 0901bd31274b7c24a907731fa5e16f5f, type: 2}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Material, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
@@ -1961,7 +1976,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   vinylPlaybackHandler: {fileID: 1957692275}
   vinylTrackIndex: 0
-  grabInteractable: {fileID: 1957692272}
+  socketInteractor: {fileID: 0}
 --- !u!82 &1743378443
 AudioSource:
   m_ObjectHideFlags: 0
@@ -2801,7 +2816,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   vinylPlaybackHandler: {fileID: 1957692275}
   vinylTrackIndex: 0
-  grabInteractable: {fileID: 1957692272}
+  socketInteractor: {fileID: 0}
 --- !u!1 &2061151696
 GameObject:
   m_ObjectHideFlags: 0

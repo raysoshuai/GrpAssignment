@@ -16,6 +16,7 @@ public class VinylPlaybackHandler : MonoBehaviour
     private float lastAngle = 0f;  // To track the last angle
     private float accumulatedPlaytime = 0f; // Track accumulated playtime
     private float targetPlaytime = 0f; // Target playtime based on rotation
+    private bool isVinylOnSocket = false; // Track if the vinyl is on the socket
 
     void Awake()
     {
@@ -46,12 +47,22 @@ public class VinylPlaybackHandler : MonoBehaviour
 
     private void OnSelectEntered(SelectEnterEventArgs args)
     {
+        if (!isVinylOnSocket)
+        {
+            return;
+        }
+
         lastAngle = hingeJoint.angle; // Set the last angle when the handle is grabbed
         Debug.Log("Handle grabbed, initial angle: " + lastAngle);
     }
 
     private void OnSelectExited(SelectExitEventArgs args)
     {
+        if (!isVinylOnSocket)
+        {
+            return;
+        }
+
         float currentAngle = hingeJoint.angle;
         float deltaAngle = currentAngle - lastAngle;
 
@@ -91,7 +102,7 @@ public class VinylPlaybackHandler : MonoBehaviour
 
     void Update()
     {
-        if (isPlaying)
+        if (isVinylOnSocket && isPlaying)
         {
             RotateVinylAndStickerMeshes();
 
@@ -106,6 +117,11 @@ public class VinylPlaybackHandler : MonoBehaviour
 
     private void RotateVinylAndStickerMeshes()
     {
+        if (!isVinylOnSocket)
+        {
+            return;
+        }
+
         float rotationSpeed = (360f / audioSource.clip.length) * Time.deltaTime;
         vinylMesh.Rotate(0f, rotationSpeed, 0f);
         stickerMesh.Rotate(0f, rotationSpeed, 0f);
@@ -133,13 +149,15 @@ public class VinylPlaybackHandler : MonoBehaviour
 
     public void StartPlayback()
     {
-        // Placeholder for starting playback
+        isVinylOnSocket = true;
+        Debug.Log("Vinyl placed on socket.");
     }
 
     public void StopPlayback()
     {
         audioSource.Stop();
         isPlaying = false;
+        isVinylOnSocket = false;
         Debug.Log("Playback stopped.");
     }
 
