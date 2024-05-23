@@ -29,8 +29,13 @@ public class FanSwitch : MonoBehaviour
         if (currentSpeed > 0)
         {
             finalSpeed += currentSpeed * Time.deltaTime;
-
             fanBlades.transform.localRotation = Quaternion.Euler(new Vector3(0, finalSpeed, 0));
+            fanBlades.GetComponent<AudioSource>().enabled = true;
+            fanBlades.GetComponent<AudioSource>().volume = currentSpeed / maxSpeed;
+        }
+        else
+        {
+            fanBlades.GetComponent<AudioSource>().enabled = false;
         }
     }
 
