@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class FlashLightControl : MonoBehaviour
 {
-    public Light spotLight; // Reference to the spotlight
-    public Material emissiveMaterial; // Reference to the emissive material
+    public Light spotLight; 
+    public Material emissiveMaterial; 
     private bool isFlashOn = false; // Boolean to track the state of the flashlight
 
     void Awake()

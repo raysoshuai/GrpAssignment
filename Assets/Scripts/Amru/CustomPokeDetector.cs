@@ -16,8 +16,10 @@ public class CustomPokeDetector : MonoBehaviour
     public UnityEvent OnPress = new UnityEvent();
     public UnityEvent OnHoverAndPress = new UnityEvent();
 
-    private bool isHovering = false;
-    private bool isTriggerPressed = false;
+    private bool isLeftHandHovering = false;
+    private bool isRightHandHovering = false;
+    private bool isLeftTriggerPressed = false;
+    private bool isRightTriggerPressed = false;
     private bool wasHoverAndPressInvoked = false;
 
     private void Awake()
@@ -25,8 +27,8 @@ public class CustomPokeDetector : MonoBehaviour
         Debug.Log("Awake: Initializing actions.");
         if (leftTriggerAction != null)
         {
-            leftTriggerAction.started += OnTriggerPressed;
-            leftTriggerAction.canceled += OnTriggerReleased;
+            leftTriggerAction.started += OnLeftTriggerPressed;
+            leftTriggerAction.canceled += OnLeftTriggerReleased;
         }
         else
         {
@@ -35,8 +37,8 @@ public class CustomPokeDetector : MonoBehaviour
 
         if (rightTriggerAction != null)
         {
-            rightTriggerAction.started += OnTriggerPressed;
-            rightTriggerAction.canceled += OnTriggerReleased;
+            rightTriggerAction.started += OnRightTriggerPressed;
+            rightTriggerAction.canceled += OnRightTriggerReleased;
         }
         else
         {
@@ -48,14 +50,14 @@ public class CustomPokeDetector : MonoBehaviour
     {
         if (leftTriggerAction != null)
         {
-            leftTriggerAction.started -= OnTriggerPressed;
-            leftTriggerAction.canceled -= OnTriggerReleased;
+            leftTriggerAction.started -= OnLeftTriggerPressed;
+            leftTriggerAction.canceled -= OnLeftTriggerReleased;
         }
 
         if (rightTriggerAction != null)
         {
-            rightTriggerAction.started -= OnTriggerPressed;
-            rightTriggerAction.canceled -= OnTriggerReleased;
+            rightTriggerAction.started -= OnRightTriggerPressed;
+            rightTriggerAction.canceled -= OnRightTriggerReleased;
         }
     }
 
@@ -101,45 +103,73 @@ public class CustomPokeDetector : MonoBehaviour
         }
     }
 
-    private void Update()
+    private void OnLeftTriggerPressed(InputAction.CallbackContext context)
     {
-        // This method can be removed since we handle trigger detection in the callbacks
-    }
-
-    private void OnTriggerPressed(InputAction.CallbackContext context)
-    {
-        Debug.Log("OnTriggerPressed: Button pressed.");
-        isTriggerPressed = true;
+        Debug.Log("OnLeftTriggerPressed: Left trigger pressed.");
+        isLeftTriggerPressed = true;
         wasHoverAndPressInvoked = false; // Reset the flag on new trigger press
         OnPress.Invoke();
 
         CheckHoverAndPress();
     }
 
-    private void OnTriggerReleased(InputAction.CallbackContext context)
+    private void OnLeftTriggerReleased(InputAction.CallbackContext context)
     {
-        Debug.Log("OnTriggerReleased: Button released.");
-        isTriggerPressed = false;
+        Debug.Log("OnLeftTriggerReleased: Left trigger released.");
+        isLeftTriggerPressed = false;
+        wasHoverAndPressInvoked = false;
+    }
+
+    private void OnRightTriggerPressed(InputAction.CallbackContext context)
+    {
+        Debug.Log("OnRightTriggerPressed: Right trigger pressed.");
+        isRightTriggerPressed = true;
+        wasHoverAndPressInvoked = false; // Reset the flag on new trigger press
+        OnPress.Invoke();
+
+        CheckHoverAndPress();
+    }
+
+    private void OnRightTriggerReleased(InputAction.CallbackContext context)
+    {
+        Debug.Log("OnRightTriggerReleased: Right trigger released.");
+        isRightTriggerPressed = false;
         wasHoverAndPressInvoked = false;
     }
 
     public void OnHoverEnter(HoverEnterEventArgs args)
     {
-        isHovering = true;
-        Debug.Log("Hover Entered: isHovering set to true");
+        if (args.interactorObject.transform.CompareTag("LeftHand"))
+        {
+            isLeftHandHovering = true;
+            Debug.Log("Hover Entered: Left hand hovering");
+        }
+        else if (args.interactorObject.transform.CompareTag("RightHand"))
+        {
+            isRightHandHovering = true;
+            Debug.Log("Hover Entered: Right hand hovering");
+        }
         CheckHoverAndPress();
     }
 
     public void OnHoverExit(HoverExitEventArgs args)
     {
-        isHovering = false;
+        if (args.interactorObject.transform.CompareTag("LeftHand"))
+        {
+            isLeftHandHovering = false;
+            Debug.Log("Hover Exited: Left hand no longer hovering");
+        }
+        else if (args.interactorObject.transform.CompareTag("RightHand"))
+        {
+            isRightHandHovering = false;
+            Debug.Log("Hover Exited: Right hand no longer hovering");
+        }
         wasHoverAndPressInvoked = false; // Reset the flag on hover exit
-        Debug.Log("Hover Exited: isHovering set to false");
     }
 
     private void CheckHoverAndPress()
     {
-        if (isHovering && isTriggerPressed && !wasHoverAndPressInvoked)
+        if ((isLeftHandHovering && isLeftTriggerPressed) || (isRightHandHovering && isRightTriggerPressed) && !wasHoverAndPressInvoked)
         {
             OnHoverAndPress.Invoke();
             wasHoverAndPressInvoked = true;

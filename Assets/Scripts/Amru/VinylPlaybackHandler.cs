@@ -4,11 +4,11 @@ using UnityEngine.XR.Interaction.Toolkit;
 public class VinylPlaybackHandler : MonoBehaviour
 {
     public AudioSource audioSource;
-    public AudioClip[] vinylTracks;  // Assign different tracks to different vinyl records in the Inspector
-    public GameObject vinyl;         // Assign the vinyl GameObject in the Inspector
-    public Transform vinylMesh;      // Assign the actual vinyl mesh (child of the vinyl) in the Inspector
-    public Transform stickerMesh;    // Assign the sticker mesh (child of the vinyl) in the Inspector
-    public XRGrabInteractable handleGrabInteractable;  // Assign the handle GameObject with XRGrabInteractable in the Inspector
+    public AudioClip[] vinylTracks;  
+    public GameObject vinyl;         
+    public Transform vinylMesh;      
+    public Transform stickerMesh;   
+    public XRGrabInteractable handleGrabInteractable;  
 
     private HingeJoint hingeJoint;
     private float totalAngle = 0f;  // Track the total accumulated angle

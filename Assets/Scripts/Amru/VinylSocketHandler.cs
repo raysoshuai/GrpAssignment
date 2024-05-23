@@ -4,7 +4,7 @@ using UnityEngine.XR.Interaction.Toolkit;
 public class VinylSocketHandler : MonoBehaviour
 {
     public VinylPlaybackHandler vinylPlaybackHandler;
-    public int vinylTrackIndex;  // Assign the appropriate track index for this vinyl record in the Inspector
+    public int vinylTrackIndex;  
     public XRSocketInteractor socketInteractor;
 
     private void Awake()
