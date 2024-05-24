@@ -6,6 +6,9 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
+    path: Assets/Scenes/MainScene/MainScene.unity
+    guid: eff4db759505841a4951f475c7db7e6c
+  - enabled: 0
     path: Assets/Scenes/Amru/Amru.unity
     guid: 16ec32db862fb46ad8368ffae1c99b1f
   m_configObjects:
