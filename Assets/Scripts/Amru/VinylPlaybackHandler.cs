@@ -4,12 +4,12 @@ using UnityEngine.XR.Interaction.Toolkit;
 public class VinylPlaybackHandler : MonoBehaviour
 {
     public AudioSource audioSource;
-    public AudioClip vinylTrack; // Changed to a single AudioClip
+    public AudioClip vinylTrack; 
     public GameObject vinyl;
     public Transform vinylMesh;
     public Transform stickerMesh;
     public XRGrabInteractable handleGrabInteractable;
-    public XRSocketInteractor socketInteractor; // Added socket interactor
+    public XRSocketInteractor socketInteractor; 
 
     private HingeJoint hingeJoint;
     private float totalAngle = 0f; // Track the total accumulated angle
@@ -156,7 +156,7 @@ public class VinylPlaybackHandler : MonoBehaviour
             return;
         }
 
-        float rotationSpeed = (720f / audioSource.clip.length) * Time.deltaTime * (isPlaying ? 1f : 0f); // Increased rotation speed
+        float rotationSpeed = (3500f / audioSource.clip.length) * Time.deltaTime * (isPlaying ? 1f : 0f); // Increased rotation speed
         vinylMesh.Rotate(0f, rotationSpeed, 0f);
         stickerMesh.Rotate(0f, rotationSpeed, 0f);
         Debug.Log("Rotating vinyl and sticker meshes at speed: " + rotationSpeed);
