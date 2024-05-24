@@ -1,55 +1,58 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class FanSwitch : MonoBehaviour
 {
-    [SerializeField] private GameObject fanSwitch;
-    [SerializeField] private GameObject fanBlades;
-    [SerializeField] private float maxSpeed = 1000f;
-    [SerializeField] private float acceleration = 150f;
-    [SerializeField] private float currentSpeed = 0f;
-    [SerializeField] private bool isFanOn = false;
+    public GameObject fanBlades;
+    public float maxSpeed = 1000f;
+    public float acceleration = 150f;
+    public float currentSpeed = 0f;
+    public bool isFanOn = false;
     private float finalSpeed;
 
-    // Start is called before the first frame update
+    private AudioSource fanAudioSource;
+
     void Start()
     {
-        
+        fanAudioSource = fanBlades.GetComponent<AudioSource>();
+        if (fanAudioSource == null)
+        {
+            Debug.LogError("AudioSource component missing from fanBlades.");
+        }
     }
 
-    // Update is called once per frame
     void Update()
     {
         if (isFanOn && currentSpeed < maxSpeed)
+        {
             currentSpeed += acceleration * Time.deltaTime;
-        else if (!isFanOn && currentSpeed >= 0)
+        }
+        else if (!isFanOn && currentSpeed > 0)
+        {
             currentSpeed -= acceleration * Time.deltaTime;
+        }
 
         if (currentSpeed > 0)
         {
             finalSpeed += currentSpeed * Time.deltaTime;
             fanBlades.transform.localRotation = Quaternion.Euler(new Vector3(0, finalSpeed, 0));
-            fanBlades.GetComponent<AudioSource>().enabled = true;
-            fanBlades.GetComponent<AudioSource>().volume = currentSpeed / maxSpeed;
+
+            if (fanAudioSource != null)
+            {
+                fanAudioSource.enabled = true;
+                fanAudioSource.volume = currentSpeed / maxSpeed;
+            }
         }
         else
         {
-            fanBlades.GetComponent<AudioSource>().enabled = false;
+            if (fanAudioSource != null)
+            {
+                fanAudioSource.enabled = false;
+            }
         }
     }
 
     public void ToggleFan()
     {
-        if (isFanOn)
-        {
-            fanSwitch.transform.rotation = Quaternion.Euler(0, 0, 180f);
-            isFanOn = false;
-        }
-        else
-        {
-            fanSwitch.transform.rotation = Quaternion.Euler(0, 0, 0);
-            isFanOn = true;
-        }
+        isFanOn = !isFanOn;
     }
 }

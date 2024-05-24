@@ -4,7 +4,9 @@ public class PointLampControl : MonoBehaviour
 {
     public Light pointLight;
     public Material surfaceMaterial;
-    private bool isLampOn = false; // Boolean to track the state of the lamp
+    public bool startLampOn = false; // Public boolean to set initial lamp state via inspector
+    public float lightIntensity = 1f; // Public float to adjust the light intensity via inspector
+    private bool isLampOn; // Boolean to track the current state of the lamp
 
     void Awake()
     {
@@ -18,7 +20,8 @@ public class PointLampControl : MonoBehaviour
             }
         }
 
-        // Initialize the lamp state
+        // Initialize the lamp state from the inspector setting
+        isLampOn = startLampOn;
         SetLightAndEmission(isLampOn);
     }
 
@@ -32,7 +35,7 @@ public class PointLampControl : MonoBehaviour
     // Helper function to set light intensity and material emission based on lamp state
     private void SetLightAndEmission(bool lampOn)
     {
-        float intensity = lampOn ? 1f : 0f;
+        float intensity = lampOn ? lightIntensity : 0f;
 
         // Set the specified intensity to the point light
         if (pointLight != null)
