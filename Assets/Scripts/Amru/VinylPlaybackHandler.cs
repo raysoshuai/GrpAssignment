@@ -4,16 +4,17 @@ using UnityEngine.XR.Interaction.Toolkit;
 public class VinylPlaybackHandler : MonoBehaviour
 {
     public AudioSource audioSource;
-    public AudioClip[] vinylTracks;  
-    public GameObject vinyl;         
-    public Transform vinylMesh;      
-    public Transform stickerMesh;   
-    public XRGrabInteractable handleGrabInteractable;  
+    public AudioClip vinylTrack; // Changed to a single AudioClip
+    public GameObject vinyl;
+    public Transform vinylMesh;
+    public Transform stickerMesh;
+    public XRGrabInteractable handleGrabInteractable;
+    public XRSocketInteractor socketInteractor; // Added socket interactor
 
     private HingeJoint hingeJoint;
-    private float totalAngle = 0f;  // Track the total accumulated angle
+    private float totalAngle = 0f; // Track the total accumulated angle
     private bool isPlaying = false;
-    private float lastAngle = 0f;  // To track the last angle
+    private float lastAngle = 0f; // To track the last angle
     private float accumulatedPlaytime = 0f; // Track accumulated playtime
     private float targetPlaytime = 0f; // Target playtime based on rotation
     private bool isVinylOnSocket = false; // Track if the vinyl is on the socket
@@ -43,6 +44,17 @@ public class VinylPlaybackHandler : MonoBehaviour
                 Debug.LogError("AudioSource component is missing on this GameObject.");
             }
         }
+
+        audioSource.clip = vinylTrack; // Assign the track to the audio source
+
+        if (socketInteractor == null)
+        {
+            Debug.LogError("Socket Interactor component is not assigned.");
+            return;
+        }
+
+        socketInteractor.selectEntered.AddListener(OnSocketEntered);
+        socketInteractor.selectExited.AddListener(OnSocketExited);
     }
 
     private void OnSelectEntered(SelectEnterEventArgs args)
@@ -106,6 +118,22 @@ public class VinylPlaybackHandler : MonoBehaviour
         lastAngle = currentAngle;  // Update lastAngle to the current angle
     }
 
+    private void OnSocketEntered(SelectEnterEventArgs args)
+    {
+        if (args.interactableObject.transform == vinyl.transform)
+        {
+            StartPlayback();
+        }
+    }
+
+    private void OnSocketExited(SelectExitEventArgs args)
+    {
+        if (args.interactableObject.transform == vinyl.transform)
+        {
+            StopPlayback();
+        }
+    }
+
     void Update()
     {
         if (isVinylOnSocket && isPlaying)
@@ -128,34 +156,18 @@ public class VinylPlaybackHandler : MonoBehaviour
             return;
         }
 
-        float rotationSpeed = (360f / audioSource.clip.length) * Time.deltaTime;
+        float rotationSpeed = (720f / audioSource.clip.length) * Time.deltaTime * (isPlaying ? 1f : 0f); // Increased rotation speed
         vinylMesh.Rotate(0f, rotationSpeed, 0f);
         stickerMesh.Rotate(0f, rotationSpeed, 0f);
         Debug.Log("Rotating vinyl and sticker meshes at speed: " + rotationSpeed);
     }
 
-    public void SetVinylTrack(int trackIndex)
-    {
-        if (trackIndex >= 0 && trackIndex < vinylTracks.Length)
-        {
-            audioSource.clip = vinylTracks[trackIndex];
-            audioSource.time = 0f;
-            audioSource.Stop();
-            isPlaying = false;
-            totalAngle = 0f;  // Reset the total angle when a new track is set
-            accumulatedPlaytime = 0f;  // Reset accumulated playtime
-            targetPlaytime = 0f; // Reset target playtime
-            Debug.Log("Vinyl track set to index: " + trackIndex);
-        }
-        else
-        {
-            Debug.LogError("Track index out of range.");
-        }
-    }
-
     public void StartPlayback()
     {
         isVinylOnSocket = true;
+        totalAngle = 0f; // Reset the total angle when a new track is set
+        accumulatedPlaytime = 0f; // Reset accumulated playtime
+        targetPlaytime = 0f; // Reset target playtime
         Debug.Log("Vinyl placed on socket.");
     }
 
@@ -164,7 +176,9 @@ public class VinylPlaybackHandler : MonoBehaviour
         audioSource.Stop();
         isPlaying = false;
         isVinylOnSocket = false;
-        Debug.Log("Playback stopped.");
+        accumulatedPlaytime = 0f; // Reset accumulated playtime when unsocketed
+        totalAngle = 0f; // Reset total angle when unsocketed
+        Debug.Log("Playback stopped and reset.");
     }
 
     void OnDestroy()
@@ -173,6 +187,12 @@ public class VinylPlaybackHandler : MonoBehaviour
         {
             handleGrabInteractable.selectEntered.RemoveListener(OnSelectEntered);
             handleGrabInteractable.selectExited.RemoveListener(OnSelectExited);
+        }
+
+        if (socketInteractor != null)
+        {
+            socketInteractor.selectEntered.RemoveListener(OnSocketEntered);
+            socketInteractor.selectExited.RemoveListener(OnSocketExited);
         }
     }
 }
